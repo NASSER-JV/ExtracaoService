@@ -2,8 +2,8 @@ namespace ExtracaoLambda.Data.Entities
 {
     public class Payload
     {
-        public string sigla { get; set; }
-        public string dataInicial { get; set; }
-        public string dataFinal { get; set; }
+        public string Sigla { get; set; }
+        public string DataInicial { get; set; }
+        public string DataFinal { get; set; }
     }
 }

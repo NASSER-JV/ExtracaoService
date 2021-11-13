@@ -23,9 +23,9 @@ namespace ExtracaoLambda.Tests
             var context = new TestLambdaContext();
             var payload = new Payload()
             {
-                dataFinal = "11122021",
-                dataInicial = "10122021",
-                sigla = "AAPL",
+                DataFinal = "11122021",
+                DataInicial = "10122021", 
+                Sigla = "AAPL",
             };
             var upperCase = function.FunctionHandler(payload, context);
 

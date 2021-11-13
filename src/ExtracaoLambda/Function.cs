@@ -22,7 +22,7 @@ namespace ExtracaoLambda
         /// <returns></returns>
         public string FunctionHandler(Payload input, ILambdaContext context)
         {
-            return $"{input.sigla}, {input.dataFinal}, {input.dataInicial}";
+            return $"{input.Sigla}, {input.DataFinal}, {input.DataInicial}";
         }
 
     }
