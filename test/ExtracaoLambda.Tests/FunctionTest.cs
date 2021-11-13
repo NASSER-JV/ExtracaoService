@@ -57,5 +57,31 @@ namespace ExtracaoLambda.Tests
 
             Assert.Equal("teste.com", noticiaCriada.Url);
         }
+        
+        [Fact]
+        public void CreateJuncaoDataService()
+        {
+            var operatinal = new Operational();
+            var empresa = operatinal.GetEmpresa("TTEX");
+            if (empresa == null)
+            {
+                var novaEmpresa = new Empresa()
+                {
+                    Nome = "Teste - Extracao",
+                    Ativo = true,
+                    Codigo = "TTEX"
+                };
+                empresa = operatinal.CriarEmpresa(novaEmpresa);
+            }
+            var juncao = new Juncoes()
+            {
+                DataFim = DateTime.Now,
+                DataInicio = DateTime.Now.AddDays(-3),
+                EmpresaId = empresa.Id
+            };
+            var juncaoCriada = operatinal.CriarJuncao(juncao);
+
+            Assert.Equal(empresa.Id, juncaoCriada.EmpresaId);
+        }
     }
 }

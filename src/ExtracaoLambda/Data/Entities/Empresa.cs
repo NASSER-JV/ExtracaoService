@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace ExtracaoLambda.Data.Entities
 {
     public class Empresa

@@ -53,5 +53,21 @@ namespace ExtracaoLambda.Data.Operational
             var responseJson = client.Deserialize<Noticia>(response).Data;
             return responseJson;
         }
+        
+        public Juncoes CriarJuncao(Juncoes juncao)
+        {
+            var client = new RestClient(dataServiceHost);
+            var request = new RestRequest($"/juncoes/criar");
+            client.UseSystemTextJson(new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            });
+            request.AddHeader("apiKey", dataServiceApiKey);
+            request.AddJsonBody(juncao);
+            var response = client.Post(request);
+            var responseJson = client.Deserialize<Juncoes>(response).Data;
+            return responseJson;
+        }
+        
     }
 }
