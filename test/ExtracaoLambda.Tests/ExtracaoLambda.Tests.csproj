@@ -13,7 +13,7 @@
     <ProjectReference Include="..\..\src\ExtracaoLambda\ExtracaoLambda.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.example.json">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

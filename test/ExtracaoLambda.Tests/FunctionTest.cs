@@ -1,15 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using Xunit;
-using Amazon.Lambda.Core;
-using Amazon.Lambda.TestUtilities;
-
-using ExtracaoLambda;
 using ExtracaoLambda.Data.Entities;
-using ExtracaoLambda.Data.Enums;
 using ExtracaoLambda.Data.Operational;
 
 namespace ExtracaoLambda.Tests
@@ -24,7 +15,7 @@ namespace ExtracaoLambda.Tests
 
             Assert.Equal("Apple", empresa.Nome);
         }
-        
+
         [Fact]
         public void CreateCompanyDataService()
         {
@@ -38,17 +29,26 @@ namespace ExtracaoLambda.Tests
 
             Assert.Equal("Teste - Extracao", empresaCriada.Nome);
         }
-        
+
         [Fact]
         public void CreateNewsDataService()
         {
             var operatinal = new Operational();
             var empresa = operatinal.GetEmpresa("TTEX");
+            if (empresa == null)
+            {
+                var novaEmpresa = new Empresa()
+                {
+                    Nome = "Teste - Extracao",
+                    Ativo = true,
+                    Codigo = "TTEX"
+                };
+                empresa = operatinal.CriarEmpresa(novaEmpresa);
+            }
             var noticia = new Noticia()
             {
                 Url = "teste.com",
                 Titulo = "TESTE - EX",
-                Analise = SentimentalEnum.Neutro,
                 Corpo = "TESTE - CORPO",
                 Date = DateTime.Now,
                 EmpresaId = empresa.Id
