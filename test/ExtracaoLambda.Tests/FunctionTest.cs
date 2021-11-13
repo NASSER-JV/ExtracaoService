@@ -1,35 +1,87 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using Xunit;
-using Amazon.Lambda.Core;
-using Amazon.Lambda.TestUtilities;
-
-using ExtracaoLambda;
 using ExtracaoLambda.Data.Entities;
+using ExtracaoLambda.Data.Operational;
 
 namespace ExtracaoLambda.Tests
 {
     public class FunctionTest
     {
         [Fact]
-        public void TestToUpperFunction()
+        public void GetCompanyDataService()
         {
+            var operational = new Operational();
+            var empresa = operational.GetEmpresa("AAPL");
 
-            // Invoke the lambda function and confirm the string was upper cased.
-            var function = new Function();
-            var context = new TestLambdaContext();
-            var payload = new Payload()
+            Assert.Equal("Apple", empresa.Nome);
+        }
+
+        [Fact]
+        public void CreateCompanyDataService()
+        {
+            var empresa = new Empresa()
             {
-                DataFinal = "11122021",
-                DataInicial = "10122021", 
-                Sigla = "AAPL",
+                Nome = "Teste - Extracao",
+                Ativo = true,
+                Codigo = "TTEX"
             };
-            var upperCase = function.FunctionHandler(payload, context);
+            var empresaCriada = new Operational().CriarEmpresa(empresa);
 
-            Assert.Equal("AAPL, 11122021, 10122021", upperCase);
+            Assert.Equal("Teste - Extracao", empresaCriada.Nome);
+        }
+
+        [Fact]
+        public void CreateNewsDataService()
+        {
+            var operatinal = new Operational();
+            var empresa = operatinal.GetEmpresa("TTEX");
+            if (empresa == null)
+            {
+                var novaEmpresa = new Empresa()
+                {
+                    Nome = "Teste - Extracao",
+                    Ativo = true,
+                    Codigo = "TTEX"
+                };
+                empresa = operatinal.CriarEmpresa(novaEmpresa);
+            }
+            var noticia = new Noticia()
+            {
+                Url = "teste.com",
+                Titulo = "TESTE - EX",
+                Corpo = "TESTE - CORPO",
+                Date = DateTime.Now,
+                EmpresaId = empresa.Id
+            };
+            var noticiaCriada = operatinal.CriarNoticia(noticia);
+
+            Assert.Equal("teste.com", noticiaCriada.Url);
+        }
+        
+        [Fact]
+        public void CreateJuncaoDataService()
+        {
+            var operatinal = new Operational();
+            var empresa = operatinal.GetEmpresa("TTEX");
+            if (empresa == null)
+            {
+                var novaEmpresa = new Empresa()
+                {
+                    Nome = "Teste - Extracao",
+                    Ativo = true,
+                    Codigo = "TTEX"
+                };
+                empresa = operatinal.CriarEmpresa(novaEmpresa);
+            }
+            var juncao = new Juncoes()
+            {
+                DataFim = DateTime.Now,
+                DataInicio = DateTime.Now.AddDays(-3),
+                EmpresaId = empresa.Id
+            };
+            var juncaoCriada = operatinal.CriarJuncao(juncao);
+
+            Assert.Equal(empresa.Id, juncaoCriada.EmpresaId);
         }
     }
 }
