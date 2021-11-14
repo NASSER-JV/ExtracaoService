@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections.Generic;
 using Amazon.Lambda.Core;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Operational;
@@ -43,8 +43,9 @@ namespace ExtracaoLambda
                     DataInicial = input.DataInicial.Replace("/", ""),
                     Sigla = input.Sigla
                 };
-                var noticias = operationalNews.BuscarNoticiasStockNews(novoInput);
-                foreach (var news in noticias.Data)
+                var noticias = new List<Noticia>();
+                var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
+                foreach (var news in noticiasStock.Data)
                 {
                     var noticia = new Noticia
                     {
@@ -54,8 +55,9 @@ namespace ExtracaoLambda
                         Corpo = news.Text,
                         Date = Convert.ToDateTime(news.Date),
                     };
-                    operational.CriarNoticia(noticia);
+                    noticias.Add(noticia);
                 }
+                operational.ImportarNoticias(noticias);
 
                 var junção = new Juncoes()
                 {
