@@ -1,4 +1,5 @@
 using System;
+using Amazon.Lambda.TestUtilities;
 using Xunit;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Operational;
@@ -111,6 +112,21 @@ namespace ExtracaoLambda.Tests
             }
 
             Assert.NotNull(noticias.data);
+        }
+
+        [Fact]
+        public void TestandoHandler()
+        {
+            var function = new Function();
+            var context = new TestLambdaContext();
+            var payLoad = new Payload()
+            {
+                Sigla = "AAPL",
+                DataFinal = "11/12/2021",
+                DataInicial = "10/11/2021",
+            };
+            var retorno = function.FunctionHandler(payLoad, context);
+            Assert.Equal("Processo concluído", retorno);
         }
     }
 }

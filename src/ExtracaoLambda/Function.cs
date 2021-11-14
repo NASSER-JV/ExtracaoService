@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Amazon.Lambda.Core;
 using ExtracaoLambda.Data.Entities;
+using ExtracaoLambda.Data.Operational;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -22,7 +23,48 @@ namespace ExtracaoLambda
         /// <returns></returns>
         public string FunctionHandler(Payload input, ILambdaContext context)
         {
-            return $"{input.Sigla}, {input.DataFinal}, {input.DataInicial}";
+            var operational = new OperationalDataService();
+            var empresa = operational.GetEmpresa(input.Sigla);
+            if (empresa == null)
+            {
+                empresa = new Empresa()
+                {
+                    Codigo = input.Sigla,
+                    Nome = "Stock",
+                    Ativo = true
+                };
+                empresa = operational.CriarEmpresa(empresa);
+            }
+
+            var novoInput = new Payload()
+            {
+                DataFinal = input.DataFinal.Replace("/", ""),
+                DataInicial = input.DataInicial.Replace("/", ""),
+                Sigla = input.Sigla
+            };
+            var noticias = new OperationalNews().BuscarNoticiasStockNews(novoInput);
+            foreach (var news in noticias.data)
+            {
+                var noticia = new Noticia()
+                {
+                    Url = news.NewsUrl,
+                    EmpresaId = empresa.Id,
+                    Titulo = news.title,
+                    Corpo = news.text,
+                    Date = DateTime.Now,
+                };
+                operational.CriarNoticia(noticia);
+            }
+
+            var junção = new Juncoes()
+            {
+                EmpresaId = empresa.Id,
+                DataFim = DateTime.Parse(input.DataFinal),
+                DataInicio = DateTime.Parse(input.DataFinal),
+            };
+            operational.CriarJuncao(junção);
+
+            return "Processo concluído";
         }
 
     }
