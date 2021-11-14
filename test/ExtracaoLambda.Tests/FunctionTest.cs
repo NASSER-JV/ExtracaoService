@@ -7,14 +7,6 @@ namespace ExtracaoLambda.Tests
 {
     public class FunctionTest
     {
-        [Fact]
-        public void GetCompanyDataService()
-        {
-            var operational = new OperationalDataService();
-            var empresa = operational.GetEmpresa("AAPL");
-
-            Assert.Equal("Apple", empresa.Nome);
-        }
 
         [Fact]
         public void CreateCompanyDataService()
@@ -28,6 +20,15 @@ namespace ExtracaoLambda.Tests
             var empresaCriada = new OperationalDataService().CriarEmpresa(empresa);
 
             Assert.Equal("Teste - Extracao", empresaCriada.Nome);
+        }
+        
+        [Fact]
+        public void GetCompanyDataService()
+        {
+            var operational = new OperationalDataService();
+            var empresa = operational.GetEmpresa("TTEX");
+
+            Assert.Equal("Teste - Extracao", empresa.Nome);
         }
 
         [Fact]
@@ -88,29 +89,39 @@ namespace ExtracaoLambda.Tests
         [Fact]
         public void BuscarNoticiasStockNew()
         {
-            var operational = new OperationalDataService();
             var payLoad = new Payload()
             {
                 Sigla = "AAPL",
                 DataFinal = "11122021",
                 DataInicial = "10112021",
             };
-            var empresa = operational.GetEmpresa(payLoad.Sigla);
             var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad);
-            foreach (var news in noticias.data)
-            {
-                var noticia = new Noticia()
-                {
-                    Url = news.NewsUrl,
-                    EmpresaId = empresa.Id,
-                    Titulo = news.title,
-                    Corpo = news.text,
-                    Date = DateTime.Now,
-                };
-                operational.CriarNoticia(noticia);
-            }
 
-            Assert.NotNull(noticias.data);
+            Assert.NotNull(noticias.Data);
+        }
+        
+        [Fact]
+        public void DeleteCompanyDataService()
+        {
+            var operational = new OperationalDataService();
+            var delete = operational.DeletarEmpresa("TTEX");
+
+            Assert.Equal("Empresa: Teste - Extracao removida com sucesso!", delete);
+        }
+
+        [Fact]
+        public void TestandoHandler()
+        {
+            var function = new Function();
+            var context = new TestLambdaContext();
+            var payLoad = new Payload()
+            {
+                Sigla = "AAPL",
+                DataFinal = "11/12/2021",
+                DataInicial = "10/11/2021",
+            };
+            var retorno = function.FunctionHandler(payLoad, context);
+            Assert.Equal("Processo concluído", retorno);
         }
     }
 }

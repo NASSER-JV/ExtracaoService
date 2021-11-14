@@ -10,18 +10,23 @@ namespace ExtracaoLambda.Data.Operational
     public class OperationalNews
     {
         private string stockNewsApiKey => Common.Config["Settings:StockNewsApiKey"];
+        private RestClient _client;
 
-        public NewsDto BuscarNoticiasStockNews(Payload payload)
+        public OperationalNews()
         {
-            var buscaClient = new RestClient("https://stocknewsapi.com/api/v1");
-            buscaClient.UseSystemTextJson(new JsonSerializerOptions
+            _client = new RestClient("https://stocknewsapi.com/api/v1");
+            _client.UseSystemTextJson(new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             });
+        }
+        
+        public NewsDto BuscarNoticiasStockNews(Payload payload)
+        {
             var request =
                 new RestRequest($"?tickers={payload.Sigla}&items=50&token={stockNewsApiKey}&date={payload.DataInicial}-{payload.DataFinal}");
-            var response = buscaClient.Get(request);
-            return buscaClient.Deserialize<NewsDto>(response).Data;
+            var response = _client.Get(request);
+            return _client.Deserialize<NewsDto>(response).Data;
         }
     }
 }
