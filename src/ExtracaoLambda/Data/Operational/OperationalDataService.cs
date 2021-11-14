@@ -11,65 +11,54 @@ namespace ExtracaoLambda.Data.Operational
     {
         private string dataServiceHost => Common.Config["Settings:DataServiceHost"];
         private string dataServiceApiKey => Common.Config["Settings:DataServiceApiKey"];
-        private string stockNewsApiKey => Common.Config["Settings:StockNewsApiKey"];
-        private RestClient client = new RestClient();
-        
-        public Empresa GetEmpresa(string sigla)
+
+        private RestClient _client;
+
+        public OperationalDataService()
         {
-            client.BaseUrl = new Uri(dataServiceHost);
-            client.UseSystemTextJson(new JsonSerializerOptions
+            _client = new RestClient(dataServiceHost);
+            _client.UseSystemTextJson(new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             });
+        }
+        
+        public Empresa GetEmpresa(string sigla)
+        {
             var request = new RestRequest($"/empresas/filtrar?sigla={sigla}&ativo=true");
             request.AddHeader("apiKey", dataServiceApiKey);
-            var response = client.Get(request);
-            var responseJson = client.Deserialize<Empresa>(response).Data;
+            var response = _client.Get(request);
+            var responseJson = _client.Deserialize<Empresa>(response).Data;
             return responseJson;
         }
         
         public Empresa CriarEmpresa(Empresa empresa)
         {
-            client.BaseUrl = new Uri(dataServiceHost);
             var request = new RestRequest($"/empresas/criar");
-            client.UseSystemTextJson(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
             request.AddHeader("apiKey", dataServiceApiKey);
             request.AddJsonBody(empresa);
-            var response = client.Post(request);
-            var responseJson = client.Deserialize<Empresa>(response).Data;
+            var response = _client.Post(request);
+            var responseJson = _client.Deserialize<Empresa>(response).Data;
             return responseJson;
         }
 
         public Noticia CriarNoticia(Noticia noticia)
         {
-            client.BaseUrl = new Uri(dataServiceHost);
             var request = new RestRequest($"/noticias/criar");
-            client.UseSystemTextJson(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
             request.AddHeader("apiKey", dataServiceApiKey);
             request.AddJsonBody(noticia);
-            var response = client.Post(request);
-            var responseJson = client.Deserialize<Noticia>(response).Data;
+            var response = _client.Post(request);
+            var responseJson = _client.Deserialize<Noticia>(response).Data;
             return responseJson;
         }
         
         public JuncoesDto CriarJuncao(Juncoes juncao)
         {
-            client.BaseUrl = new Uri(dataServiceHost);
             var request = new RestRequest($"/juncoes/criar");
-            client.UseSystemTextJson(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
             request.AddHeader("apiKey", dataServiceApiKey);
             request.AddJsonBody(juncao);
-            var response = client.Post(request);
-            var responseJson = client.Deserialize<JuncoesDto>(response).Data;
+            var response = _client.Post(request);
+            var responseJson = _client.Deserialize<JuncoesDto>(response).Data;
             return responseJson;
         }
 
