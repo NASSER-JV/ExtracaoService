@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Utilities;
@@ -9,19 +8,16 @@ namespace ExtracaoLambda.Data.Operational
 {
     public class OperationalDataService
     {
-        private string dataServiceHost => Common.Config["Settings:DataServiceHost"];
-        private string dataServiceApiKey => Common.Config["Settings:DataServiceApiKey"];
-
         private RestClient _client;
 
         public OperationalDataService()
         {
-            _client = new RestClient(dataServiceHost);
+            _client = new RestClient(Common.Config["Settings:DataServiceHost"]);
             _client.UseSystemTextJson(new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             });
-            _client.AddDefaultHeader("apiKey", dataServiceApiKey);
+            _client.AddDefaultHeader("apiKey", Common.Config["Settings:DataServiceApiKey"]);
         }
         
         public Empresa GetEmpresa(string sigla)
@@ -30,6 +26,14 @@ namespace ExtracaoLambda.Data.Operational
             var response = _client.Get(request);
             var responseJson = _client.Deserialize<Empresa>(response).Data;
             return responseJson;
+        }
+        
+        public string DeletarEmpresa(string sigla)
+        {
+            var empresa = GetEmpresa(sigla);
+            var request = new RestRequest($"/empresas/deletar/{empresa.Id}");
+            _client.Delete(request);
+            return $"Empresa: {empresa.Nome} removida com sucesso!";
         }
         
         public Empresa CriarEmpresa(Empresa empresa)
