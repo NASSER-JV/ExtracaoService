@@ -4,15 +4,15 @@ namespace ExtracaoLambda.Data.DTO
 {
     public class NewsDto
     {
-        public Data[] data { get; set; }
+        public Data[] Data { get; set; }
     }
 
     public class Data
     {
         [JsonPropertyName("news_url")]
         public string NewsUrl { get; set; }
-        public string title { get; set; }
-        public string text { get; set; }
-        public string sentiment { get; set; }
+        public string Title { get; set; }
+        public string Text { get; set; }
+        public string Sentiment { get; set; }
     }
 }

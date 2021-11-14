@@ -98,20 +98,20 @@ namespace ExtracaoLambda.Tests
             };
             var empresa = operational.GetEmpresa(payLoad.Sigla);
             var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad);
-            foreach (var news in noticias.data)
+            foreach (var news in noticias.Data)
             {
                 var noticia = new Noticia()
                 {
                     Url = news.NewsUrl,
                     EmpresaId = empresa.Id,
-                    Titulo = news.title,
-                    Corpo = news.text,
+                    Titulo = news.Title,
+                    Corpo = news.Text,
                     Date = DateTime.Now,
                 };
                 operational.CriarNoticia(noticia);
             }
 
-            Assert.NotNull(noticias.data);
+            Assert.NotNull(noticias.Data);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace ExtracaoLambda.Tests
             var context = new TestLambdaContext();
             var payLoad = new Payload()
             {
-                Sigla = "AAPL",
+                Sigla = "FB",
                 DataFinal = "11/12/2021",
                 DataInicial = "10/11/2021",
             };

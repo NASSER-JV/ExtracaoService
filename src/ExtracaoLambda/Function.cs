@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using Amazon.Lambda.Core;
 using ExtracaoLambda.Data.Entities;
@@ -36,34 +33,37 @@ namespace ExtracaoLambda
                 empresa = operational.CriarEmpresa(empresa);
             }
 
-            var novoInput = new Payload()
+            if (empresa != null)
             {
-                DataFinal = input.DataFinal.Replace("/", ""),
-                DataInicial = input.DataInicial.Replace("/", ""),
-                Sigla = input.Sigla
-            };
-            var noticias = new OperationalNews().BuscarNoticiasStockNews(novoInput);
-            foreach (var news in noticias.data)
-            {
-                var noticia = new Noticia()
+                var novoInput = new Payload()
                 {
-                    Url = news.NewsUrl,
-                    EmpresaId = empresa.Id,
-                    Titulo = news.title,
-                    Corpo = news.text,
-                    Date = DateTime.Now,
+                    DataFinal = input.DataFinal.Replace("/", ""),
+                    DataInicial = input.DataInicial.Replace("/", ""),
+                    Sigla = input.Sigla
                 };
-                operational.CriarNoticia(noticia);
+                var noticias = new OperationalNews().BuscarNoticiasStockNews(novoInput);
+                foreach (var news in noticias.Data)
+                {
+                    var noticia = new Noticia
+                    {
+                        Url = news.NewsUrl,
+                        EmpresaId = empresa.Id,
+                        Titulo = news.Text,
+                        Corpo = news.Text,
+                        Date = DateTime.Now,
+                    };
+                    operational.CriarNoticia(noticia);
+                }
+
+                var junção = new Juncoes()
+                {
+                    EmpresaId = empresa.Id,
+                    DataFim = DateTime.Parse(input.DataFinal),
+                    DataInicio = DateTime.Parse(input.DataFinal),
+                };
+                operational.CriarJuncao(junção);
+
             }
-
-            var junção = new Juncoes()
-            {
-                EmpresaId = empresa.Id,
-                DataFim = DateTime.Parse(input.DataFinal),
-                DataInicio = DateTime.Parse(input.DataFinal),
-            };
-            operational.CriarJuncao(junção);
-
             return "Processo concluído";
         }
 

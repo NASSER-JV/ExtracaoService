@@ -21,12 +21,12 @@ namespace ExtracaoLambda.Data.Operational
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             });
+            _client.AddDefaultHeader("apiKey", dataServiceApiKey);
         }
         
         public Empresa GetEmpresa(string sigla)
         {
             var request = new RestRequest($"/empresas/filtrar?sigla={sigla}&ativo=true");
-            request.AddHeader("apiKey", dataServiceApiKey);
             var response = _client.Get(request);
             var responseJson = _client.Deserialize<Empresa>(response).Data;
             return responseJson;
@@ -35,7 +35,6 @@ namespace ExtracaoLambda.Data.Operational
         public Empresa CriarEmpresa(Empresa empresa)
         {
             var request = new RestRequest($"/empresas/criar");
-            request.AddHeader("apiKey", dataServiceApiKey);
             request.AddJsonBody(empresa);
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<Empresa>(response).Data;
@@ -45,7 +44,6 @@ namespace ExtracaoLambda.Data.Operational
         public Noticia CriarNoticia(Noticia noticia)
         {
             var request = new RestRequest($"/noticias/criar");
-            request.AddHeader("apiKey", dataServiceApiKey);
             request.AddJsonBody(noticia);
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<Noticia>(response).Data;
@@ -55,7 +53,6 @@ namespace ExtracaoLambda.Data.Operational
         public JuncoesDto CriarJuncao(Juncoes juncao)
         {
             var request = new RestRequest($"/juncoes/criar");
-            request.AddHeader("apiKey", dataServiceApiKey);
             request.AddJsonBody(juncao);
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<JuncoesDto>(response).Data;
