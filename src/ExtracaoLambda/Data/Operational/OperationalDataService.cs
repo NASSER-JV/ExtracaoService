@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Utilities;
@@ -52,6 +53,13 @@ namespace ExtracaoLambda.Data.Operational
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<Noticia>(response).Data;
             return responseJson;
+        }
+        
+        public void ImportarNoticias(List<Noticia> noticias)
+        {
+            var request = new RestRequest($"/noticias/importar");
+            request.AddJsonBody(noticias);
+            _client.Post(request);
         }
         
         public JuncoesDto CriarJuncao(Juncoes juncao)
