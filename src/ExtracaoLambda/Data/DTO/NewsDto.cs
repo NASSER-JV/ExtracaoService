@@ -15,6 +15,9 @@ namespace ExtracaoLambda.Data.DTO
         
         public string Date { get; set; }
         public string Text { get; set; }
+        
         public string Sentiment { get; set; }
+        
+        public string CompanyName { get; set; }
     }
 }

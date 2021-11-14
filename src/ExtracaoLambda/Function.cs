@@ -20,14 +20,16 @@ namespace ExtracaoLambda
         /// <returns></returns>
         public string FunctionHandler(Payload input, ILambdaContext context)
         {
+            var operationalNews = new OperationalNews();
             var operational = new OperationalDataService();
             var empresa = operational.GetEmpresa(input.Sigla);
             if (empresa == null)
             {
+                var nomeEmpresa = operationalNews.BuscarNomeEmpresaFinancialApi(input.Sigla);
                 empresa = new Empresa()
                 {
                     Codigo = input.Sigla,
-                    Nome = "Stock",
+                    Nome = nomeEmpresa[0].CompanyName,
                     Ativo = true
                 };
                 empresa = operational.CriarEmpresa(empresa);
@@ -41,7 +43,7 @@ namespace ExtracaoLambda
                     DataInicial = input.DataInicial.Replace("/", ""),
                     Sigla = input.Sigla
                 };
-                var noticias = new OperationalNews().BuscarNoticiasStockNews(novoInput);
+                var noticias = operationalNews.BuscarNoticiasStockNews(novoInput);
                 foreach (var news in noticias.Data)
                 {
                     var noticia = new Noticia
