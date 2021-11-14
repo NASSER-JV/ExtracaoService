@@ -55,10 +55,10 @@ namespace ExtracaoLambda.Data.Operational
             return responseJson;
         }
         
-        public void ImportarNoticias(List<Noticia> noticia)
+        public void ImportarNoticias(List<Noticia> noticias)
         {
             var request = new RestRequest($"/noticias/importar");
-            request.AddJsonBody(noticia);
+            request.AddJsonBody(noticias);
             _client.Post(request);
         }
         
