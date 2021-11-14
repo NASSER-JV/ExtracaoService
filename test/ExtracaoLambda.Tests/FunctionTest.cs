@@ -106,7 +106,7 @@ namespace ExtracaoLambda.Tests
                     EmpresaId = empresa.Id,
                     Titulo = news.Title,
                     Corpo = news.Text,
-                    Date = DateTime.Now,
+                    Date = Convert.ToDateTime(news.Date),
                 };
                 operational.CriarNoticia(noticia);
             }

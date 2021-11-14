@@ -50,7 +50,7 @@ namespace ExtracaoLambda
                         EmpresaId = empresa.Id,
                         Titulo = news.Text,
                         Corpo = news.Text,
-                        Date = DateTime.Now,
+                        Date = Convert.ToDateTime(news.Date),
                     };
                     operational.CriarNoticia(noticia);
                 }
