@@ -10,7 +10,7 @@ namespace ExtracaoLambda.Tests
         [Fact]
         public void GetCompanyDataService()
         {
-            var operational = new Operational();
+            var operational = new OperationalDataService();
             var empresa = operational.GetEmpresa("AAPL");
 
             Assert.Equal("Apple", empresa.Nome);
@@ -25,7 +25,7 @@ namespace ExtracaoLambda.Tests
                 Ativo = true,
                 Codigo = "TTEX"
             };
-            var empresaCriada = new Operational().CriarEmpresa(empresa);
+            var empresaCriada = new OperationalDataService().CriarEmpresa(empresa);
 
             Assert.Equal("Teste - Extracao", empresaCriada.Nome);
         }
@@ -33,7 +33,7 @@ namespace ExtracaoLambda.Tests
         [Fact]
         public void CreateNewsDataService()
         {
-            var operatinal = new Operational();
+            var operatinal = new OperationalDataService();
             var empresa = operatinal.GetEmpresa("TTEX");
             if (empresa == null)
             {
@@ -61,7 +61,7 @@ namespace ExtracaoLambda.Tests
         [Fact]
         public void CreateJuncaoDataService()
         {
-            var operatinal = new Operational();
+            var operatinal = new OperationalDataService();
             var empresa = operatinal.GetEmpresa("TTEX");
             if (empresa == null)
             {
@@ -88,15 +88,15 @@ namespace ExtracaoLambda.Tests
         [Fact]
         public void BuscarNoticiasStockNew()
         {
-            var operatinal = new Operational();
+            var operational = new OperationalDataService();
             var payLoad = new Payload()
             {
                 Sigla = "AAPL",
                 DataFinal = "11122021",
                 DataInicial = "10112021",
             };
-            var empresa = operatinal.GetEmpresa(payLoad.Sigla);
-            var noticias = operatinal.BuscarNoticiasStockNews(payLoad);
+            var empresa = operational.GetEmpresa(payLoad.Sigla);
+            var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad);
             foreach (var news in noticias.data)
             {
                 var noticia = new Noticia()
@@ -107,7 +107,7 @@ namespace ExtracaoLambda.Tests
                     Corpo = news.text,
                     Date = DateTime.Now,
                 };
-                operatinal.CriarNoticia(noticia);
+                operational.CriarNoticia(noticia);
             }
 
             Assert.NotNull(noticias.data);
