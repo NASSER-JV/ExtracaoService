@@ -1,4 +1,5 @@
 using System;
+using Amazon.Lambda.TestUtilities;
 using Xunit;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Operational;
@@ -7,14 +8,6 @@ namespace ExtracaoLambda.Tests
 {
     public class FunctionTest
     {
-        [Fact]
-        public void GetCompanyDataService()
-        {
-            var operational = new Operational();
-            var empresa = operational.GetEmpresa("AAPL");
-
-            Assert.Equal("Apple", empresa.Nome);
-        }
 
         [Fact]
         public void CreateCompanyDataService()
@@ -25,15 +18,24 @@ namespace ExtracaoLambda.Tests
                 Ativo = true,
                 Codigo = "TTEX"
             };
-            var empresaCriada = new Operational().CriarEmpresa(empresa);
+            var empresaCriada = new OperationalDataService().CriarEmpresa(empresa);
 
             Assert.Equal("Teste - Extracao", empresaCriada.Nome);
+        }
+        
+        [Fact]
+        public void GetCompanyDataService()
+        {
+            var operational = new OperationalDataService();
+            var empresa = operational.GetEmpresa("TTEX");
+
+            Assert.Equal("Teste - Extracao", empresa.Nome);
         }
 
         [Fact]
         public void CreateNewsDataService()
         {
-            var operatinal = new Operational();
+            var operatinal = new OperationalDataService();
             var empresa = operatinal.GetEmpresa("TTEX");
             if (empresa == null)
             {
@@ -61,7 +63,7 @@ namespace ExtracaoLambda.Tests
         [Fact]
         public void CreateJuncaoDataService()
         {
-            var operatinal = new Operational();
+            var operatinal = new OperationalDataService();
             var empresa = operatinal.GetEmpresa("TTEX");
             if (empresa == null)
             {
@@ -82,6 +84,45 @@ namespace ExtracaoLambda.Tests
             var juncaoCriada = operatinal.CriarJuncao(juncao);
 
             Assert.Equal(empresa.Id, juncaoCriada.EmpresaId);
+        }
+        
+                
+        [Fact]
+        public void BuscarNoticiasStockNew()
+        {
+            var payLoad = new Payload()
+            {
+                Sigla = "AAPL",
+                DataFinal = "11122021",
+                DataInicial = "10112021",
+            };
+            var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad);
+
+            Assert.NotNull(noticias.Data);
+        }
+        
+        [Fact]
+        public void DeleteCompanyDataService()
+        {
+            var operational = new OperationalDataService();
+            var delete = operational.DeletarEmpresa("TTEX");
+
+            Assert.Equal("Empresa: Teste - Extracao removida com sucesso!", delete);
+        }
+
+        [Fact]
+        public void TestandoHandler()
+        {
+            var function = new Function();
+            var context = new TestLambdaContext();
+            var payLoad = new Payload()
+            {
+                Sigla = "AAPL",
+                DataFinal = "11/12/2021",
+                DataInicial = "10/11/2021",
+            };
+            var retorno = function.FunctionHandler(payLoad, context);
+            Assert.Equal("Processo concluído", retorno);
         }
     }
 }
