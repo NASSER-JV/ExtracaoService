@@ -83,5 +83,34 @@ namespace ExtracaoLambda.Tests
 
             Assert.Equal(empresa.Id, juncaoCriada.EmpresaId);
         }
+        
+                
+        [Fact]
+        public void BuscarNoticiasStockNew()
+        {
+            var operatinal = new Operational();
+            var payLoad = new Payload()
+            {
+                Sigla = "AAPL",
+                DataFinal = "11122021",
+                DataInicial = "10112021",
+            };
+            var empresa = operatinal.GetEmpresa(payLoad.Sigla);
+            var noticias = operatinal.BuscarNoticiasStockNews(payLoad);
+            foreach (var news in noticias.data)
+            {
+                var noticia = new Noticia()
+                {
+                    Url = news.NewsUrl,
+                    EmpresaId = empresa.Id,
+                    Titulo = news.title,
+                    Corpo = news.text,
+                    Date = DateTime.Now,
+                };
+                operatinal.CriarNoticia(noticia);
+            }
+
+            Assert.NotNull(noticias.data);
+        }
     }
 }

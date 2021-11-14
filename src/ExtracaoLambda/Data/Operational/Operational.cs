@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using ExtracaoLambda.Data.DTO;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Utilities;
 using RestSharp;
@@ -11,6 +12,7 @@ namespace ExtracaoLambda.Data.Operational
     {
         private string dataServiceHost => Common.Config["Settings:DataServiceHost"];
         private string dataServiceApiKey => Common.Config["Settings:DataServiceApiKey"];
+        private string stockNewsApiKey => Common.Config["Settings:StockNewsApiKey"];
         private RestClient client = new RestClient();
         
         public Empresa GetEmpresa(string sigla)
@@ -70,6 +72,19 @@ namespace ExtracaoLambda.Data.Operational
             var response = client.Post(request);
             var responseJson = client.Deserialize<JuncoesDto>(response).Data;
             return responseJson;
+        }
+
+        public NewsDto BuscarNoticiasStockNews(Payload payload)
+        {
+            var buscaClient = new RestClient("https://stocknewsapi.com/api/v1");
+            buscaClient.UseSystemTextJson(new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            });
+            var request =
+                new RestRequest($"?tickers={payload.Sigla}&items=50&token={stockNewsApiKey}&date={payload.DataInicial}-{payload.DataFinal}");
+            var response = buscaClient.Get(request);
+            return buscaClient.Deserialize<NewsDto>(response).Data;
         }
         
     }
