@@ -1,4 +1,5 @@
 using System;
+using Amazon.Lambda.TestUtilities;
 using Xunit;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Operational;
