@@ -36,12 +36,14 @@ namespace ExtracaoLambda.Data.Operational
                 var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
                 foreach (var news in noticiasStock.Data)
                 {
+                    var sentimento = tractiveSentiment(news.Sentiment);
                     var noticia = new Noticia
                     {
                         Url = news.NewsUrl,
                         EmpresaId = empresa.Id,
+                        Sentimento = sentimento,
                         Titulo = news.Text,
-                        Corpo = news.Text,
+                        Texto = news.Text,
                         Date = Convert.ToDateTime(news.Date),
                     };
                     noticias.Add(noticia);
@@ -74,14 +76,7 @@ namespace ExtracaoLambda.Data.Operational
             var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
             foreach (var news in noticiasStock.Data)
             {
-                var sentimento = 0;
-                if (news.Sentiment.Contains("Positive"))
-                    sentimento = 1;
-                if (news.Sentiment.Contains("Negative"))
-                    sentimento = -1;
-                if (news.Sentiment.Contains("Neutral"))
-                    sentimento = 0;
-
+                var sentimento = tractiveSentiment(news.Sentiment);
                 var noticiaAnalise = new NoticiaAnalise
                 {
                     Url = news.NewsUrl,
@@ -97,5 +92,16 @@ namespace ExtracaoLambda.Data.Operational
             operational.ImportarNoticiasAnalise(noticiasComSentimento);
                 
         }
+
+        private static int tractiveSentiment(string Sentiment)
+        {
+            if (Sentiment.Equals("Positive"))
+                return 1;
+            if (Sentiment.Equals("Negative"))
+                return -1;
+            
+            return 0;
+        }
+        
     }
 }

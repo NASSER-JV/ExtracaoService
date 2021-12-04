@@ -51,7 +51,8 @@ namespace ExtracaoLambda.Tests
             {
                 Url = "teste.com",
                 Titulo = "TESTE - EX",
-                Corpo = "TESTE - CORPO",
+                Texto = "TESTE - CORPO",
+                Sentimento = 1,
                 Date = DateTime.Now,
                 EmpresaId = empresa.Id
             };
@@ -151,6 +152,22 @@ namespace ExtracaoLambda.Tests
                 DataFinal = "11/12/2021",
                 DataInicial = "10/11/2021",
                 NewsAnalysis = true
+            };
+            var retorno = function.FunctionHandler(payLoad, context);
+            Assert.Equal("Processo concluído", retorno);
+        }
+        
+        [Fact]
+        public void TestandoHandlerCriarNoticias()
+        {
+            var function = new Function();
+            var context = new TestLambdaContext();
+            var payLoad = new Payload()
+            {
+                Sigla = "FB",
+                DataFinal = "11/12/2021",
+                DataInicial = "10/11/2021",
+                NewsAnalysis = false
             };
             var retorno = function.FunctionHandler(payLoad, context);
             Assert.Equal("Processo concluído", retorno);

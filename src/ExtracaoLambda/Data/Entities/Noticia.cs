@@ -9,7 +9,8 @@ namespace ExtracaoLambda.Data.Entities
         
         public string Titulo { get; set; }
         
-        public string Corpo { get; set; }
+        public string Texto { get; set; }
+        public int Sentimento { get; set; }
         
         public DateTime Date { get; set; }
 
