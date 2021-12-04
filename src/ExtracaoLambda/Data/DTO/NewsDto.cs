@@ -13,6 +13,8 @@ namespace ExtracaoLambda.Data.DTO
         public string NewsUrl { get; set; }
         public string Title { get; set; }
         
+        public string[] Tickers { get; set; }
+        
         public string Date { get; set; }
         public string Text { get; set; }
         

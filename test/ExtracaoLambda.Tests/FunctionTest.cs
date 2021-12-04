@@ -141,15 +141,16 @@ namespace ExtracaoLambda.Tests
         }
 
         [Fact]
-        public void TestandoHandler()
+        public void TestandoHandlerCriarNoticiasAnalysis()
         {
             var function = new Function();
             var context = new TestLambdaContext();
             var payLoad = new Payload()
             {
-                Sigla = "AAPL",
+                Tickers = new [] {"FB", "GOOG"},
                 DataFinal = "11/12/2021",
                 DataInicial = "10/11/2021",
+                NewsAnalysis = true
             };
             var retorno = function.FunctionHandler(payLoad, context);
             Assert.Equal("Processo concluído", retorno);

@@ -29,8 +29,19 @@ namespace ExtracaoLambda.Data.Operational
         
         public NewsDto BuscarNoticiasStockNews(Payload payload)
         {
-            var request =
-                new RestRequest($"?tickers={payload.Sigla}&items=50&token={stockNewsApiKey}&date={payload.DataInicial}-{payload.DataFinal}");
+            var request = new RestRequest();
+            if (string.IsNullOrEmpty(payload.Sigla))
+            {
+                var tickers = string.Join(",", payload.Tickers);
+                request.Resource =
+                    $"?tickers={tickers}&items=50&token={stockNewsApiKey}&date={payload.DataInicial}-{payload.DataFinal}";
+            }
+            else
+            {
+                request.Resource =
+                    $"?tickers={payload.Sigla}&items=50&token={stockNewsApiKey}&date={payload.DataInicial}-{payload.DataFinal}";
+            }
+
             var response = _client.Get(request);
             return _client.Deserialize<NewsDto>(response).Data;
         }

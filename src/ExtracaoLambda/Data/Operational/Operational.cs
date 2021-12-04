@@ -1,76 +1,101 @@
-using System;
-using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ExtracaoLambda.Data.Entities;
-using ExtracaoLambda.Data.Utilities;
-using RestSharp;
-using RestSharp.Serializers.SystemTextJson;
 
 namespace ExtracaoLambda.Data.Operational
 {
     public class Operational
     {
-        private string dataServiceHost => Common.Config["Settings:DataServiceHost"];
-        private string dataServiceApiKey => Common.Config["Settings:DataServiceApiKey"];
-        private RestClient client = new RestClient();
-        
-        public Empresa GetEmpresa(string sigla)
+        public static void FunctionGetNews(Payload input)
         {
-            client.BaseUrl = new Uri(dataServiceHost);
-            client.UseSystemTextJson(new JsonSerializerOptions
+            var operationalNews = new OperationalNews();
+            var operational = new OperationalDataService();
+            var empresa = operational.GetEmpresa(input.Sigla);
+            if (empresa == null)
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
-            var request = new RestRequest($"/empresas/filtrar?sigla={sigla}&ativo=true");
-            request.AddHeader("apiKey", dataServiceApiKey);
-            var response = client.Get(request);
-            var responseJson = client.Deserialize<Empresa>(response).Data;
-            return responseJson;
-        }
-        
-        public Empresa CriarEmpresa(Empresa empresa)
-        {
-            client.BaseUrl = new Uri(dataServiceHost);
-            var request = new RestRequest($"/empresas/criar");
-            client.UseSystemTextJson(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
-            request.AddHeader("apiKey", dataServiceApiKey);
-            request.AddJsonBody(empresa);
-            var response = client.Post(request);
-            var responseJson = client.Deserialize<Empresa>(response).Data;
-            return responseJson;
-        }
+                var nomeEmpresa = operationalNews.BuscarNomeEmpresaFinancialApi(input.Sigla);
+                empresa = new Empresa()
+                {
+                    Codigo = input.Sigla,
+                    Nome = nomeEmpresa[0].CompanyName,
+                    Ativo = true
+                };
+                empresa = operational.CriarEmpresa(empresa);
+            }
 
-        public Noticia CriarNoticia(Noticia noticia)
-        {
-            client.BaseUrl = new Uri(dataServiceHost);
-            var request = new RestRequest($"/noticias/criar");
-            client.UseSystemTextJson(new JsonSerializerOptions
+            if (empresa != null)
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
-            request.AddHeader("apiKey", dataServiceApiKey);
-            request.AddJsonBody(noticia);
-            var response = client.Post(request);
-            var responseJson = client.Deserialize<Noticia>(response).Data;
-            return responseJson;
+                var novoInput = new Payload()
+                {
+                    DataFinal = input.DataFinal.Replace("/", ""),
+                    DataInicial = input.DataInicial.Replace("/", ""),
+                    Sigla = input.Sigla
+                };
+                var noticias = new List<Noticia>();
+                var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
+                foreach (var news in noticiasStock.Data)
+                {
+                    var noticia = new Noticia
+                    {
+                        Url = news.NewsUrl,
+                        EmpresaId = empresa.Id,
+                        Titulo = news.Text,
+                        Corpo = news.Text,
+                        Date = Convert.ToDateTime(news.Date),
+                    };
+                    noticias.Add(noticia);
+                }
+                operational.ImportarNoticias(noticias);
+
+                var junção = new Juncoes()
+                {
+                    EmpresaId = empresa.Id,
+                    DataFim = DateTime.Parse(input.DataFinal),
+                    DataInicio = DateTime.Parse(input.DataFinal),
+                };
+                operational.CriarJuncao(junção);
+
+            }
         }
         
-        public JuncoesDto CriarJuncao(Juncoes juncao)
+        public static void FunctionGetNewsAnalysis(Payload input)
         {
-            client.BaseUrl = new Uri(dataServiceHost);
-            var request = new RestRequest($"/juncoes/criar");
-            client.UseSystemTextJson(new JsonSerializerOptions
+            var operationalNews = new OperationalNews();
+            var operational = new OperationalDataService();
+
+            var novoInput = new Payload()
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
-            request.AddHeader("apiKey", dataServiceApiKey);
-            request.AddJsonBody(juncao);
-            var response = client.Post(request);
-            var responseJson = client.Deserialize<JuncoesDto>(response).Data;
-            return responseJson;
+                DataFinal = input.DataFinal.Replace("/", ""),
+                DataInicial = input.DataInicial.Replace("/", ""),
+                Tickers = input.Tickers
+            };
+            var noticias = new List<NoticiaAnalise>();
+            var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
+            foreach (var news in noticiasStock.Data)
+            {
+                var sentimento = 0;
+                if (news.Sentiment.Contains("Positive"))
+                    sentimento = 1;
+                if (news.Sentiment.Contains("Negative"))
+                    sentimento = -1;
+                if (news.Sentiment.Contains("Neutral"))
+                    sentimento = 0;
+
+                var noticiaAnalise = new NoticiaAnalise
+                {
+                    Url = news.NewsUrl,
+                    Sentimento = sentimento,
+                    Texto = news.Text,
+                    Titulo = news.Title,
+                    Tickers = news.Tickers,
+                };
+                noticias.Add(noticiaAnalise);
+            }
+
+            var noticiasComSentimento = noticias.Where(x => x.Sentimento != null).ToList();
+            operational.ImportarNoticiasAnalise(noticiasComSentimento);
+                
         }
-        
     }
 }
