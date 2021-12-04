@@ -48,16 +48,32 @@ namespace ExtracaoLambda.Data.Operational
 
         public Noticia CriarNoticia(Noticia noticia)
         {
-            var request = new RestRequest($"/noticias/criar");
+            var request = new RestRequest($"/noticias");
             request.AddJsonBody(noticia);
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<Noticia>(response).Data;
             return responseJson;
         }
         
+        public NoticiaAnalise CriarNoticiaAnalise(NoticiaAnalise noticia)
+        {
+            var request = new RestRequest($"/noticiasanalise");
+            request.AddJsonBody(noticia);
+            var response = _client.Post(request);
+            var responseJson = _client.Deserialize<NoticiaAnalise>(response).Data;
+            return responseJson;
+        }
+        
+        public void ImportarNoticiasAnalise(List<NoticiaAnalise> noticias)
+        {
+            var request = new RestRequest($"/noticiasanalise/lote");
+            request.AddJsonBody(noticias);
+            _client.Post(request);
+        }
+        
         public void ImportarNoticias(List<Noticia> noticias)
         {
-            var request = new RestRequest($"/noticias/importar");
+            var request = new RestRequest($"/noticias/lote");
             request.AddJsonBody(noticias);
             _client.Post(request);
         }

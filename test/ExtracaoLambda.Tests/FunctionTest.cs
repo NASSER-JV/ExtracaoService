@@ -61,6 +61,36 @@ namespace ExtracaoLambda.Tests
         }
         
         [Fact]
+        public void CreateNewsAnalysisDataService()
+        {
+            var operatinal = new OperationalDataService();
+            var empresa = operatinal.GetEmpresa("TTEX");
+            if (empresa == null)
+            {
+                var novaEmpresa = new Empresa()
+                {
+                    Nome = "Teste - Extracao",
+                    Ativo = true,
+                    Codigo = "TTEX"
+                };
+                empresa = operatinal.CriarEmpresa(novaEmpresa);
+            }
+
+            var noticiaAnalise = new NoticiaAnalise()
+            {
+                Url = "teste.com",
+                Titulo = "TESTE - EX",
+                Texto = "TESTE - CORPO",
+                Sentimento = 0,
+                Tickers = new[] {"TT", "TESTE"},
+            };
+            
+            var noticiaCriada = operatinal.CriarNoticiaAnalise(noticiaAnalise);
+
+            Assert.Equal("teste.com", noticiaCriada.Url);
+        }
+        
+        [Fact]
         public void CreateJuncaoDataService()
         {
             var operatinal = new OperationalDataService();
