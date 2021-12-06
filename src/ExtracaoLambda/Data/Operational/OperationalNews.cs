@@ -30,7 +30,7 @@ namespace ExtracaoLambda.Data.Operational
         public NewsDto BuscarNoticiasStockNews(Payload payload)
         {
             var request = new RestRequest();
-            if (string.IsNullOrEmpty(payload.Sigla))
+            if (payload.Sigla == null)
             {
                 var tickers = string.Join(",", payload.Tickers);
                 request.Resource =

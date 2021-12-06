@@ -39,7 +39,7 @@ namespace ExtracaoLambda.Data.Operational
         
         public Empresa CriarEmpresa(Empresa empresa)
         {
-            var request = new RestRequest($"/empresas/criar");
+            var request = new RestRequest($"/empresas");
             request.AddJsonBody(empresa);
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<Empresa>(response).Data;
@@ -80,7 +80,7 @@ namespace ExtracaoLambda.Data.Operational
         
         public JuncoesDto CriarJuncao(Juncoes juncao)
         {
-            var request = new RestRequest($"/juncoes/criar");
+            var request = new RestRequest($"/juncoes");
             request.AddJsonBody(juncao);
             var response = _client.Post(request);
             var responseJson = _client.Deserialize<JuncoesDto>(response).Data;
