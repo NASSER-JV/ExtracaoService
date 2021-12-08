@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ExtracaoLambda.Data.Entities;
 
@@ -9,6 +10,10 @@ namespace ExtracaoLambda.Data.Operational
     {
         public static void FunctionGetNews(Payload input)
         {
+            var dataFinalEua = DateTime.ParseExact(input.DataFinal, "dd'/'MM'/'yyyy", CultureInfo.InvariantCulture)
+                .ToString("MM'/'dd'/'yyyy");
+            var dataInicialEua = DateTime.ParseExact(input.DataInicial, "dd'/'MM'/'yyyy", CultureInfo.InvariantCulture)
+                .ToString("MM'/'dd'/'yyyy");
             var operationalNews = new OperationalNews();
             var operational = new OperationalDataService();
             var empresa = operational.GetEmpresa(input.Sigla);
@@ -28,8 +33,8 @@ namespace ExtracaoLambda.Data.Operational
             {
                 var novoInput = new Payload()
                 {
-                    DataFinal = input.DataFinal.Replace("/", ""),
-                    DataInicial = input.DataInicial.Replace("/", ""),
+                    DataFinal = dataFinalEua.Replace("/", ""),
+                    DataInicial = dataInicialEua.Replace("/", ""),
                     Sigla = input.Sigla
                 };
                 var noticias = new List<Noticia>();
@@ -63,13 +68,17 @@ namespace ExtracaoLambda.Data.Operational
         
         public static void FunctionGetNewsAnalysis(Payload input)
         {
+            var dataFinalEua = DateTime.ParseExact(input.DataFinal, "dd'/'MM'/'yyyy", CultureInfo.InvariantCulture)
+                .ToString("MM'/'dd'/'yyyy");
+            var dataInicialEua = DateTime.ParseExact(input.DataInicial, "dd'/'MM'/'yyyy", CultureInfo.InvariantCulture)
+                .ToString("MM'/'dd'/'yyyy");
             var operationalNews = new OperationalNews();
             var operational = new OperationalDataService();
 
             var novoInput = new Payload()
             {
-                DataFinal = input.DataFinal.Replace("/", ""),
-                DataInicial = input.DataInicial.Replace("/", ""),
+                DataFinal = dataFinalEua.Replace("/", ""),
+                DataInicial = dataInicialEua.Replace("/", ""),
                 Tickers = input.Tickers
             };
             var noticias = new List<NoticiaAnalise>();

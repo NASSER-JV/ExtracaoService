@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using Amazon.Lambda.Core;
 using ExtracaoLambda.Data.Entities;
 using ExtracaoLambda.Data.Operational;
@@ -21,10 +18,6 @@ namespace ExtracaoLambda
         /// <returns></returns>
         public string FunctionHandler(Payload input, ILambdaContext context)
         {
-            input.DataFinal = DateTime.ParseExact(input.DataFinal, "dd'/'MM'/'yyyy", CultureInfo.InvariantCulture)
-                .ToString("MM'/'dd'/'yyyy");
-            input.DataInicial = DateTime.ParseExact(input.DataInicial, "dd'/'MM'/'yyyy", CultureInfo.InvariantCulture)
-                .ToString("MM'/'dd'/'yyyy");
             if (input.NewsAnalysis)
             {
                 Operational.FunctionGetNewsAnalysis(input);
