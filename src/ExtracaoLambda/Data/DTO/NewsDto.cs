@@ -1,10 +1,19 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ExtracaoLambda.Data.DTO
 {
     public class NewsDto
     {
-        public Data[] Data { get; set; }
+        public List<Data> Data { get; set; }
+        
+        [JsonPropertyName("total_pages")]
+        public int TotalPages { get; set; }
+
+        public NewsDto()
+        {
+            Data = new List<Data>();
+        }
     }
 
     public class Data

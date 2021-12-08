@@ -33,7 +33,7 @@ namespace ExtracaoLambda.Data.Operational
                     Sigla = input.Sigla
                 };
                 var noticias = new List<Noticia>();
-                var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
+                var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput, 1);
                 foreach (var news in noticiasStock.Data)
                 {
                     var sentimento = tractiveSentiment(news.Sentiment);
@@ -73,7 +73,7 @@ namespace ExtracaoLambda.Data.Operational
                 Tickers = input.Tickers
             };
             var noticias = new List<NoticiaAnalise>();
-            var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput);
+            var noticiasStock = operationalNews.BuscarNoticiasStockNews(novoInput, 1);
             foreach (var news in noticiasStock.Data)
             {
                 var sentimento = tractiveSentiment(news.Sentiment);

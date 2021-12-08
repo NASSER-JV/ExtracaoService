@@ -127,7 +127,7 @@ namespace ExtracaoLambda.Tests
                 DataFinal = "11122021",
                 DataInicial = "10112021",
             };
-            var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad);
+            var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad, 1);
 
             Assert.NotNull(noticias.Data);
         }
@@ -165,8 +165,8 @@ namespace ExtracaoLambda.Tests
             var payLoad = new Payload()
             {
                 Sigla = "FB",
-                DataFinal = "11/12/2021",
-                DataInicial = "10/11/2021",
+                DataFinal = "03/12/2021",
+                DataInicial = "03/11/2021",
                 NewsAnalysis = false
             };
             var retorno = function.FunctionHandler(payLoad, context);
