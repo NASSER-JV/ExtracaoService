@@ -129,7 +129,7 @@ namespace ExtracaoLambda.Tests
             };
             var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad, 1);
 
-            Assert.NotNull(noticias.Data);
+            Assert.NotNull(noticias);
         }
         
         [Fact]

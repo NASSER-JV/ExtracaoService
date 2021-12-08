@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using ExtracaoLambda.Data.DTO;
@@ -14,11 +14,9 @@ namespace ExtracaoLambda.Data.Operational
         private string stockNewsApiKey => Common.Config["Settings:StockNewsApiKey"];
         private RestClient _client;
         private RestClient _clientFinancial;
-        private NewsDto _newsDto;
 
         public OperationalNews()
         {
-            _newsDto = new NewsDto();
             _clientFinancial = new RestClient("https://financialmodelingprep.com");
             _clientFinancial.UseSystemTextJson(new JsonSerializerOptions
             {
@@ -32,8 +30,10 @@ namespace ExtracaoLambda.Data.Operational
         }
         
         
-        public NewsDto BuscarNoticiasStockNews(Payload payload, int pagina)
+        public List<DTO.Data> BuscarNoticiasStockNews(Payload payload, int pagina)
         {
+            
+            var newsDto = new List<DTO.Data>();
             var request = new RestRequest();
             if (payload.Sigla == null)
             {
@@ -48,19 +48,16 @@ namespace ExtracaoLambda.Data.Operational
             }
 
             var response = _client.Get(request);
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.OK) return newsDto;
+            var newsData = _client.Deserialize<NewsDto>(response).Data;
+            newsDto.AddRange(newsData.Data);
+            pagina++;
+            if (pagina <= newsData.TotalPages)
             {
-                var newsData = _client.Deserialize<NewsDto>(response).Data;
-                _newsDto.TotalPages = newsData.TotalPages;
-                _newsDto.Data.AddRange(newsData.Data);
-                pagina++;
-                if (pagina <= _newsDto.TotalPages)
-                {
-                    _newsDto.Data.AddRange(BuscarNoticiasStockNews(payload, pagina).Data);
-                }
+                newsDto.AddRange(BuscarNoticiasStockNews(payload, pagina));
             }
 
-            return _newsDto;
+            return newsDto;
         }
 
         public DTO.Data[] BuscarNomeEmpresaFinancialApi(string sigla)
