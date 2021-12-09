@@ -1,15 +1,16 @@
 using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using ExtracaoLambda.Data.Entities;
-using ExtracaoLambda.Data.Operational;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
 namespace ExtracaoLambda
 {
     public class Function
     {
-        
+        private Operational.Operational Operational { get; } = new Operational.Operational();
+
         /// <summary>
         /// A simple function that takes a string and does a ToUpperz
         /// </summary>
@@ -20,16 +21,15 @@ namespace ExtracaoLambda
         {
             if (input.NewsAnalysis)
             {
-                Operational.FunctionGetNewsAnalysis(input);
+                Operational.ObterNoticiasAnalise(input);
             }
             else
             {
-                Operational.FunctionGetNews(input);
+                Operational.ObterNoticias(input);
             }
-                
+
 
             return "Processo concluído";
         }
-
     }
 }

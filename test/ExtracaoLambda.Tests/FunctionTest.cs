@@ -1,146 +1,12 @@
 using System;
 using Amazon.Lambda.TestUtilities;
-using Xunit;
 using ExtracaoLambda.Data.Entities;
-using ExtracaoLambda.Data.Operational;
+using Xunit;
 
 namespace ExtracaoLambda.Tests
 {
     public class FunctionTest
     {
-
-        [Fact]
-        public void CreateCompanyDataService()
-        {
-            var empresa = new Empresa()
-            {
-                Nome = "Teste - Extracao",
-                Ativo = true,
-                Codigo = "TTEX"
-            };
-            var empresaCriada = new OperationalDataService().CriarEmpresa(empresa);
-
-            Assert.Equal("Teste - Extracao", empresaCriada.Nome);
-        }
-        
-        [Fact]
-        public void GetCompanyDataService()
-        {
-            var operational = new OperationalDataService();
-            var empresa = operational.GetEmpresa("TTEX");
-
-            Assert.Equal("Teste - Extracao", empresa.Nome);
-        }
-
-        [Fact]
-        public void CreateNewsDataService()
-        {
-            var operatinal = new OperationalDataService();
-            var empresa = operatinal.GetEmpresa("TTEX");
-            if (empresa == null)
-            {
-                var novaEmpresa = new Empresa()
-                {
-                    Nome = "Teste - Extracao",
-                    Ativo = true,
-                    Codigo = "TTEX"
-                };
-                empresa = operatinal.CriarEmpresa(novaEmpresa);
-            }
-            var noticia = new Noticia()
-            {
-                Url = "teste.com",
-                Titulo = "TESTE - EX",
-                Texto = "TESTE - CORPO",
-                Sentimento = 1,
-                Date = DateTime.Now,
-                EmpresaId = empresa.Id
-            };
-            var noticiaCriada = operatinal.CriarNoticia(noticia);
-
-            Assert.Equal("teste.com", noticiaCriada.Url);
-        }
-        
-        [Fact]
-        public void CreateNewsAnalysisDataService()
-        {
-            var operatinal = new OperationalDataService();
-            var empresa = operatinal.GetEmpresa("TTEX");
-            if (empresa == null)
-            {
-                var novaEmpresa = new Empresa()
-                {
-                    Nome = "Teste - Extracao",
-                    Ativo = true,
-                    Codigo = "TTEX"
-                };
-                empresa = operatinal.CriarEmpresa(novaEmpresa);
-            }
-
-            var noticiaAnalise = new NoticiaAnalise()
-            {
-                Url = "teste.com",
-                Titulo = "TESTE - EX",
-                Texto = "TESTE - CORPO",
-                Sentimento = 0,
-                Tickers = new[] {"TT", "TESTE"},
-            };
-            
-            var noticiaCriada = operatinal.CriarNoticiaAnalise(noticiaAnalise);
-
-            Assert.Equal("teste.com", noticiaCriada.Url);
-        }
-        
-        [Fact]
-        public void CreateJuncaoDataService()
-        {
-            var operatinal = new OperationalDataService();
-            var empresa = operatinal.GetEmpresa("TTEX");
-            if (empresa == null)
-            {
-                var novaEmpresa = new Empresa()
-                {
-                    Nome = "Teste - Extracao",
-                    Ativo = true,
-                    Codigo = "TTEX"
-                };
-                empresa = operatinal.CriarEmpresa(novaEmpresa);
-            }
-            var juncao = new Juncoes()
-            {
-                DataFim = DateTime.Now,
-                DataInicio = DateTime.Now.AddDays(-3),
-                EmpresaId = empresa.Id
-            };
-            var juncaoCriada = operatinal.CriarJuncao(juncao);
-
-            Assert.Equal(empresa.Id, juncaoCriada.EmpresaId);
-        }
-        
-                
-        [Fact]
-        public void BuscarNoticiasStockNew()
-        {
-            var payLoad = new Payload()
-            {
-                Sigla = "AAPL",
-                DataFinal = "11122021",
-                DataInicial = "10112021",
-            };
-            var noticias = new OperationalNews().BuscarNoticiasStockNews(payLoad, 1);
-
-            Assert.NotNull(noticias);
-        }
-        
-        [Fact]
-        public void DeleteCompanyDataService()
-        {
-            var operational = new OperationalDataService();
-            var delete = operational.DeletarEmpresa("TTEX");
-
-            Assert.Equal("Empresa: Teste - Extracao removida com sucesso!", delete);
-        }
-
         [Fact]
         public void TestandoHandlerCriarNoticiasAnalysis()
         {
@@ -148,15 +14,16 @@ namespace ExtracaoLambda.Tests
             var context = new TestLambdaContext();
             var payLoad = new Payload()
             {
-                Tickers = new [] {"FB", "GOOG"},
-                DataFinal = "11/12/2021",
-                DataInicial = "10/11/2021",
+                Tickers = new[]
+                    { "AAPL", "MSFT", "AMZN", "TSLA", "FB", "GOOG", "NVDA", "AMD", "CSCO", "INTC", "SONY", "IBM" },
+                DataFinal = new DateTime(2021, 11, 30),
+                DataInicial = new DateTime(2021, 05, 01),
                 NewsAnalysis = true
             };
             var retorno = function.FunctionHandler(payLoad, context);
             Assert.Equal("Processo concluído", retorno);
         }
-        
+
         [Fact]
         public void TestandoHandlerCriarNoticias()
         {
@@ -165,8 +32,8 @@ namespace ExtracaoLambda.Tests
             var payLoad = new Payload()
             {
                 Sigla = "FB",
-                DataFinal = "03/12/2021",
-                DataInicial = "03/11/2021",
+                DataFinal = new DateTime(2021, 11, 30),
+                DataInicial = new DateTime(2021, 11, 25),
                 NewsAnalysis = false
             };
             var retorno = function.FunctionHandler(payLoad, context);
