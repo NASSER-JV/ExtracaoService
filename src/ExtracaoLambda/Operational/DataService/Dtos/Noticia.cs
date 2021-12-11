@@ -6,6 +6,7 @@ namespace ExtracaoLambda.Operational.DataService.Dtos
 {
     public class Noticia
     {
+        public int Id { get; set; }
         public string Url { get; set; }
         public string Titulo { get; set; }
         public string Texto { get; set; }
@@ -14,6 +15,7 @@ namespace ExtracaoLambda.Operational.DataService.Dtos
         [JsonConverter(typeof(BrazilDateConverter))]
         public DateTime Data { get; set; }
 
+        public string EventoId { get; set; }
         public int EmpresaId { get; set; }
     }
 }

@@ -42,12 +42,14 @@ namespace ExtracaoLambda.Operational
 
             var noticias = newsList.Select(news => new Noticia
             {
+                Id = news.NewsId,
                 Url = news.NewsUrl,
                 Titulo = news.Title,
                 Texto = news.Text,
                 Data = DateTime.Parse(news.Date),
                 EmpresaId = empresa.Id,
-                Sentimento = SentimentoParaNumero(news.Sentiment)
+                Sentimento = SentimentoParaNumero(news.Sentiment),
+                EventoId = news.EventId
             }).ToList();
             DataService.CriarNoticiasEmLote(noticias);
 
@@ -70,6 +72,7 @@ namespace ExtracaoLambda.Operational
                 Titulo = news.Title,
                 Texto = news.Text,
                 Tickers = news.Tickers,
+                Data = DateTime.Parse(news.Date),
                 Sentimento = SentimentoParaNumero(news.Sentiment)
             }).ToList();
             DataService.CriarNoticiasAnaliseEmLote(noticiasAnalise.Where(noticia => noticia.Sentimento != 0).ToList());

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 using ExtracaoLambda.Data.Utilities;
 using ExtracaoLambda.Operational.DataService.Dtos;
 using RestSharp;
@@ -61,12 +62,12 @@ namespace ExtracaoLambda.Operational.DataService
 
         public void CriarNoticiasAnaliseEmLote(List<NoticiaAnalise> noticiasAnalise)
         {
-            foreach (var noticiaAnalise in noticiasAnalise) CriarNoticiaAnalise(noticiaAnalise);
+            Parallel.ForEach(noticiasAnalise, noticiaAnalise => CriarNoticiaAnalise(noticiaAnalise));
         }
 
         public void CriarNoticiasEmLote(List<Noticia> noticias)
         {
-            foreach (var noticia in noticias) SalvarNoticia(noticia);
+            Parallel.ForEach(noticias, noticia => SalvarNoticia(noticia));
         }
 
         public Juncao CriarJuncao(CriarJuncao juncao)

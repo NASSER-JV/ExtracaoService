@@ -29,7 +29,7 @@ namespace ExtracaoLambda.Operational.StockNews
 
             var request =
                 new RestRequest(
-                    $"?tickers={string.Join(",", tickers)}&items=50&token={StockNewsApiKey}&page={pagina}&date={dataInicial:MMddyyyy}-{dataFinal:MMddyyyy}&sentiment=positive,negative");
+                    $"?tickers={string.Join(",", tickers)}&items=50&token={StockNewsApiKey}&page={pagina}&date={dataInicial:MMddyyyy}-{dataFinal:MMddyyyy}&sentiment=positive,negative&extra-fields=id,eventid");
             var response = Client.Get<NewsList>(request);
 
             if (response.StatusCode != HttpStatusCode.OK) return newsList;

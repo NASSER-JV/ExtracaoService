@@ -17,6 +17,7 @@ namespace ExtracaoLambda.Operational.StockNews.Dtos
 
     public class News
     {
+        [JsonPropertyName("news_id")] public int NewsId { get; set; }
         [JsonPropertyName("news_url")] public string NewsUrl { get; set; }
 
         public string Title { get; set; }
@@ -27,5 +28,6 @@ namespace ExtracaoLambda.Operational.StockNews.Dtos
         public string Text { get; set; }
 
         public string Sentiment { get; set; }
+        [JsonPropertyName("eventid")] public string EventId { get; set; }
     }
 }
